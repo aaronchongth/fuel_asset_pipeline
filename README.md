@@ -11,8 +11,8 @@ cd fuel_asset_pipeline
 source scripts/setup.bash
 
 # Create the necessary temporary directories
-mkdir wip/zips
-mkdir wip/output
+mkdir -p wip/zips
+mkdir -p wip/output
 
 # Create thumbnails for each of the models in MODEL_DIR
 # the outputs are zips
