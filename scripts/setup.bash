@@ -35,3 +35,18 @@ function unzip_rename_thumbnails {
     mv $OUTPUT_MODEL_DIR/meta $OUTPUT_MODEL_DIR/thumbnails
   done
 }
+
+function copy_reflect {
+  # $1 folder to copy from
+  # $2 folder to mirror
+  # $3 output folder
+
+  SOURCE="$(realpath $1)"
+  MIRROR="$(realpath $2)"
+  OUTPUT="$(realpath $3)"
+
+  for d in $MIRROR/* ; do
+    fbname=$(basename "$d")
+    cp -r $SOURCE/$fbname $OUTPUT/.
+  done
+}
