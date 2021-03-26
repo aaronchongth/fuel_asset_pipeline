@@ -18,6 +18,7 @@ parser_copy_with_ref.add_argument('--source', '-s', type=str)
 parser_copy_with_ref.add_argument('--dest', '-d', type=str)
 parser_copy_with_ref.add_argument('--ref', '-r', type=str)
 parser_copy_with_ref.add_argument('--folders-only', '-f', action='store_true')
+parser_copy_with_ref.add_argument('--ignore', '-i', type=str)
 
 def main():
     args = parser.parse_args()

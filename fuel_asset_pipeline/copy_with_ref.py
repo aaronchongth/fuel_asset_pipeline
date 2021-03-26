@@ -1,5 +1,19 @@
 import os
 import shutil
+from progressbar import progressbar
+
+
+# From https://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
+# def copytree(src, dst, symlinks=False, ignore=None):
+#     for item in os.listdir(src):
+#         s = os.path.join(src, item)
+#         d = os.path.join(dst, item)
+#         if os.path.isdir(s):
+#             os.makedirs(d, exist_ok=True)
+#             shutil.copytree(s, d, symlinks, ignore)
+#         else:
+#             shutil.copy2(s, d)
+
 
 def copy_with_ref(args):
     assert args.subparser_name == 'copy_with_ref'
@@ -14,6 +28,9 @@ def copy_with_ref(args):
     source = os.path.abspath(args.source)
     dest = os.path.abspath(args.dest)
     folders_only = args.folders_only
+    ignores = []
+    if args.ignore is not None:
+        ignores = args.ignore.split(',')
 
     if folders_only:
         print('Copying folders only')
@@ -22,6 +39,7 @@ def copy_with_ref(args):
     print('  ref : {}'.format(ref))
     print('  from: {}'.format(source))
     print('  to  : {}'.format(dest))
+    print('  ignoring: {}', format(args.ignore))
 
     ref_dirs = os.listdir(ref)
 
@@ -30,6 +48,9 @@ def copy_with_ref(args):
     for dir in ref_dirs:
         ref_dir_path = os.path.join(ref, dir)
         if folders_only and not os.path.isdir(ref_dir_path):
+            continue
+
+        if dir in ignores:
             continue
 
         source_dir_path = os.path.join(source, dir)
@@ -52,10 +73,11 @@ def copy_with_ref(args):
     print('Initial checks passed, copying...')
 
     # Copying
-    for dir in ref_dirs:
-        ref_dir_path = os.path.join(ref, dir)
+    for i in progressbar(range(len(ref_dirs))):
+        dir = ref_dirs[i]
+        if dir in ignores:
+            continue
+
         source_dir_path = os.path.join(source, dir)
         dest_dir_path = os.path.join(dest, dir)
-
-
-
+        shutil.copytree(source_dir_path, dest_dir_path, False)
