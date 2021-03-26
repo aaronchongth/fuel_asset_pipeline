@@ -89,22 +89,22 @@ class ValidXml(Rule):
             return False
 
         config_path = os.path.join(self.dir, 'model.config')
-        sdf_path = os.path.join(self.dir, 'model.sdf')
-        # TODO(AA): Check additional model.sdf versions from config to parse
+        sdf_paths = get_sdf_paths_from_dir_config(self.dir)
 
         try:
             ET.parse(config_path)
         except:
             print('Error: Failed to parse XML, {}.'.format(config_path))
-            return False
+            self.success = False
 
-        try:
-            ET.parse(sdf_path)
-        except:
-            print('Error: Failed to parse XML, {}'.format(sdf_path))
-            return False
-        
-        return True
+        for path in sdf_paths:
+            try:
+                ET.parse(path)
+            except:
+                print('Error: Failed to parse XML, {}.'.format(path))
+                self.success = False
+
+        return self.success
 
 #===============================================================================
 class NamingConvention(Rule):
@@ -115,6 +115,26 @@ class NamingConvention(Rule):
         self.success = True
 
     def is_valid(self):
+        if not ValidXml(self.dir).is_valid():
+            print('Error: NamingConvention failed, due to failed ValidXml, {}'
+                .format(self.dir))
+            return False
+
+        config_path = os.path.join(dir, 'model.config')
+        config_tree = None
+        try:
+            config_tree = ET.parse(config_path)
+        except:
+            print('Error: {} is not valid XML.'.format(config_path))
+            return []
+
+        config_root = config_tree.getroot()
+        config_models = config_root.findall('model')
+        if len(config_models) != 1:
+            print('Error: More than 1 model defined in model.config for {}.'
+                .format(dir))
+            return []
+        
         dir_name = os.path.dirname(self.dir)
         # Check that dir, config, sdf is the same
         # Check that there are no spaces
