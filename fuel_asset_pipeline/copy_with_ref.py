@@ -2,17 +2,14 @@
 
 import os
 import shutil
+from utils import check_dirs
 from progressbar import progressbar
 
 
 def copy_with_ref(args):
     assert args.subparser_name == 'copy_with_ref'
-    assert os.path.exists(args.ref)
-    assert os.path.isdir(args.ref)
-    assert os.path.exists(args.source)
-    assert os.path.isdir(args.source)
-    assert os.path.exists(args.dest)
-    assert os.path.isdir(args.dest)
+    if not check_dirs([args.ref, args.source, args.dest]):
+        return
 
     ref = os.path.abspath(args.ref)
     source = os.path.abspath(args.source)

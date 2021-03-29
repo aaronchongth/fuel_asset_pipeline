@@ -4,6 +4,8 @@ import os
 
 
 def check_path(path):
+    if path is None:
+        return False
     if not os.path.exists(path):
         print('Error: path {} does not exist.'.format(path))
         return False
@@ -19,6 +21,8 @@ def check_paths(paths):
 
 
 def check_dir(dir):
+    if dir is None:
+        return False
     if not os.path.exists(dir):
         print('Error: path {} does not exist.'.format(dir))
         return False
