@@ -4,8 +4,8 @@ import os
 import argparse
 
 from copy_with_ref import copy_with_ref
-from check import check
 from check_all import check_all
+from check import check
 
 
 # Init overall parser
@@ -37,6 +37,10 @@ def main():
 
     if args.subparser_name == 'copy_with_ref':
         copy_with_ref(args)
+    elif args.subparser_name == 'check':
+        check(args)
+    elif args.subparser_name == 'check_all':
+        check_all(args)
     else:
         print('all done!')
 

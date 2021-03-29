@@ -21,7 +21,9 @@ setup(
     license='Apache License, Version 2.0',
     tests_require=[],
     scripts=[
-        'fuel_asset_pipeline/copy_with_ref.py'
+        'fuel_asset_pipeline/copy_with_ref.py',
+        'fuel_asset_pipeline/check.py',
+        'fuel_asset_pipeline/check_all.py',
     ],
     entry_points={
         'console_scripts': [

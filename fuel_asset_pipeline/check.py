@@ -13,12 +13,11 @@ class ModelChecker:
         self.config_path = None
         self.config_tree = None
         self.config_root = None
-        self.config_model = None
         self.sdf_names = []
         self.sdf_paths = []
         self.model_sdf_roots = []
-        self.config_model_name = None
         self.model_tags = []
+        self.uris = []
 
         # Each one of these rules should only return False if it is necessary
         # for the other tests, e.g. file existence, valid xml, etc
@@ -28,7 +27,6 @@ class ModelChecker:
             self.recommended_sdf_exists,
             self.file_and_folder_names_have_no_spaces,
             self.config_xml_is_valid,
-            self.config_only_has_single_model,
             self.sdfs_exist,
             self.sdfs_xml_is_valid,
             self.config_model_name_is_valid,
@@ -46,7 +44,7 @@ class ModelChecker:
             print('Error: {} is not a directory.'.format(self.model_dir_path))
             return False
         
-        self.model_dir_name = os.path.dirname(self.model_dir_path)
+        self.model_dir_name = os.path.basename(self.model_dir_path)
         return True
 
     def config_exists(self):
@@ -82,27 +80,15 @@ class ModelChecker:
     def config_xml_is_valid(self):
         try:
             self.config_tree = ET.parse(self.config_path)
+            self.config_root = self.config_tree.getroot()
         except:
             print('Error: XML is not valid, {}'.format(self.config_path))
             return False
         return True
 
-    def config_only_has_single_model(self):
-        if self.config_tree is None:
-            return False
-        self.config_root = self.config_tree.getroot()
-        config_models = self.config_root.findall('model')
-        if len(config_models) != 1:
-            print('Error: found {} models in model.config, {}'
-                .format(len(config_models), self.config_path))
-            return False
-        
-        self.config_model = config_models[0]
-        return True
-
     def sdfs_exist(self):
         self.sdf_names = [
-            sdf_tag.text for sdf_tag in self.config_model.findall('sdf')]
+            sdf_tag.text for sdf_tag in self.config_root.findall('sdf')]
         if len(self.sdf_names) == 0:
             print('Error: could not find any sdf tags in model.config, {}'
                 .format(self.config_path))
@@ -130,13 +116,12 @@ class ModelChecker:
         return success
 
     def config_model_name_is_valid(self):
-        names = self.config_model.find_all('name')
+        names = self.config_root.findall('name')
         if len(names) != 1:
             print('Error: found more than 1 name tag, {}'
                 .format(self.config_path))
             return False
-        self.config_model_name = names[0].text
-        if self.config_model_name != self.model_dir_name:
+        if names[0].text != self.model_dir_name:
             print('Error: config model name is not the same as model directory name'
                 .format(self.config_path))
             return False
@@ -148,16 +133,9 @@ class ModelChecker:
         for i in range(len(self.sdf_paths)):
             sdf_path = self.sdf_paths[i]
             root = self.model_sdf_roots[i]
-            sdfs = root.findall('sdf')
-            if len(sdfs) != 1:
-                print('Error: number of sdf tags is not 1, {}'
-                    .format(sdf_path))
-                success = False
-                continue
-            sdf_tag = sdfs[0]
 
-            model_tags = sdf_tag.findall('model')
-            if len(model_tags) != 0:
+            model_tags = root.findall('model')
+            if len(model_tags) != 1:
                 print('Error: number of model tags is not 1, {}'
                     .format(sdf_path))
                 success = False
@@ -173,22 +151,38 @@ class ModelChecker:
                     .format(model_name, self.model_dir_name, self.sdf_path))
                 success = False
                 continue
-
-            if model_name != self.config_model_name:
-                print(
-                    'Error: sdf model name [{}] is not the same as config ' +
-                    'model name [{}], {}'
-                    .format(model_name, self.config_model_name, self.sdf_path))
-                success = False
-                continue
-
         return success
 
     def sdfs_uri_is_local(self):
-        raise NotImplementedError
+        success = True
+        for m in self.model_tags:
+            for uri in m.iter('uri'):
+                uri_text = uri.text
+                if uri_text[:8] != 'model://':
+                    print('Error: sdf uri not getting from model, {}'
+                        .format(self.sdf_path))
+                    success = False
+                    continue
+                uri_model_name = uri_text[8:].split('/')[0]
+                if uri_model_name != self.model_dir_name:
+                    print('Error: uri is linking to a different model, {}'
+                        .format(uri_model_name))
+                    success = False
+                    continue
+                self.uris.append(uri_text)
+        return success
 
     def sdfs_uri_exists(self):
-        raise NotImplementedError
+        success = True
+        for u in self.uris:
+            uri_model_name = u[8:].split('/')[0]
+            uri_path = u[(9+len(uri_model_name)):]
+            uri_abs_path = os.path.join(self.model_dir_path, uri_path)
+            if not os.path.exists(uri_abs_path):
+                print('Error: uri linked item does not exist, {}'
+                    .format(uri_abs_path))
+                success = False
+        return success
 
     def check(self):
         for i in range(len(self.rules)):
@@ -196,27 +190,16 @@ class ModelChecker:
             if not rule():
                 print('Failed: {} out of {} checks passed.'
                     .format(i, len(self.rules)))
-                return
+                return False
+        print('Success [{}]: {} out of {} checks passed.'
+            .format(self.model_dir_name, len(self.rules), len(self.rules)))
+        return True
 
 
 def check(args):
     assert args.subparser_name == 'check'
+    assert os.path.exists(args.model_dir)
+    assert os.path.isdir(args.model_dir)
     model_dir_path = os.path.abspath(args.model_dir)
     model_checker = ModelChecker(model_dir_path)
     model_checker.check()
-
-
-def print_it(a):
-    print(a)
-
-def print_it_twice(a):
-    print(a)
-    print('again!')
-
-if __name__ == '__main__':
-    tests = [
-        print_it,
-        print_it_twice
-    ]
-    for t in tests:
-        t(420)
