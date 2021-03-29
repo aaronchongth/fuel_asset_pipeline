@@ -2,14 +2,15 @@
 
 import os
 import difflib
+from utils import check_dir
 from check import ModelChecker
 from progressbar import progressbar
 
 
 def check_all(args):
     assert args.subparser_name == 'check_all'
-    assert os.path.exists(args.dir)
-    assert os.path.isdir(args.dir)
+    if not check_dir(args.dir):
+        return
 
     host_dir = os.path.abspath(args.dir)
     models_dir = os.listdir(host_dir)

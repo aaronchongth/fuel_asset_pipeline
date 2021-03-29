@@ -3,6 +3,7 @@
 import os
 import argparse
 
+from generate_thumbnails import generate_thumbnails
 from copy_with_ref import copy_with_ref
 from check_all import check_all
 from check import check
@@ -31,6 +32,11 @@ parser_check.add_argument('--model-dir', '-m', type=str)
 parser_check_all = subparsers.add_parser('check_all')
 parser_check_all.add_argument('--dir', '-d', type=str)
 
+# Generate thumbnails
+parser_generate_thumbnails = subparsers.add_parser('generate_thumbnails')
+parser_generate_thumbnails.add_argument('--dir', '-d', type=str)
+parser_generate_thumbnails.add_argument('--output-dir', '-o', type=str)
+
 
 def main():
     args = parser.parse_args()
@@ -41,6 +47,8 @@ def main():
         check(args)
     elif args.subparser_name == 'check_all':
         check_all(args)
+    elif args.subparser_name == 'generate_thumbnails':
+        generate_thumbnails(args)
     else:
         print('all done!')
 

@@ -22,8 +22,10 @@ setup(
     tests_require=[],
     scripts=[
         'fuel_asset_pipeline/copy_with_ref.py',
+        'fuel_asset_pipeline/utils.py',
         'fuel_asset_pipeline/check.py',
         'fuel_asset_pipeline/check_all.py',
+        'fuel_asset_pipeline/generate_thumbnails.py',
     ],
     entry_points={
         'console_scripts': [

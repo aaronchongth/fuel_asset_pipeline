@@ -2,6 +2,7 @@
 
 import os
 import difflib
+from utils import check_dir
 import xml.etree.ElementTree as ET
 from progressbar import progressbar
 
@@ -198,8 +199,9 @@ class ModelChecker:
 
 def check(args):
     assert args.subparser_name == 'check'
-    assert os.path.exists(args.model_dir)
-    assert os.path.isdir(args.model_dir)
+    if not check_dir(args.model_dir):
+        return
+
     model_dir_path = os.path.abspath(args.model_dir)
     model_checker = ModelChecker(model_dir_path)
     model_checker.check()
