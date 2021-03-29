@@ -1,5 +1,17 @@
 # Fuel Asset Pipeline
 
+This package contains tools to help with the process of uploading models onto [Ignition Fuel](https://app.ignitionrobotics.org/).
+
+## Prerequisites
+
+```bash
+pip3 install \
+  colcon-common-extensions \
+  progressbar
+```
+
+and Gazebo classic.
+
 ## Instructions
 
 Clone it,
@@ -31,7 +43,7 @@ ros2 run fuel_asset_pipeline fuel_asset_pipeline copy_with_ref \
   --ignore MODELS_TO_IGNORE
 ```
 
-Check it,
+Check them all,
 
 ```bash
 source ws/install/setup.bash
@@ -47,7 +59,7 @@ source ws/install/setup.bash
 ros2 run fuel_asset_pipeline fuel_asset_pipeline check --model-dir MODEL_DIR
 ```
 
-Run it,
+Generate the thumbnails,
 
 ```bash
 source ws/install/setup.bash
@@ -63,3 +75,10 @@ Be sure to test the final models. `gazebo` should be launched without any issues
 ```bash
 export GAZEBO_MODEL_PATH=wip/output/; gazebo --verbose
 ```
+
+## Next up
+
+* Refer more to https://github.com/luca-della-vedova/gazebo_asset_checker/blob/master/asset_checker.py, for colorful printouts
+* Checking texture names
+* Checking allowed extension types, refer to Ignition Fuel
+* Upload onto Fuel using `ign-fuel-tools`
