@@ -18,24 +18,26 @@ subparsers = parser.add_subparsers(dest='subparser_name')
 
 # Copy with reference call
 parser_copy_with_ref = subparsers.add_parser('copy_with_ref')
-parser_copy_with_ref.add_argument('--source', '-s', type=str)
-parser_copy_with_ref.add_argument('--dest', '-d', type=str)
-parser_copy_with_ref.add_argument('--ref', '-r', type=str)
-parser_copy_with_ref.add_argument('--folders-only', '-f', action='store_true')
-parser_copy_with_ref.add_argument('--ignore', '-i', type=str)
+parser_copy_with_ref.add_argument('--source', '-s', type=str, required=True)
+parser_copy_with_ref.add_argument('--dest', '-d', type=str, required=True)
+parser_copy_with_ref.add_argument('--ref', '-r', type=str, required=True)
+parser_copy_with_ref.add_argument(
+    '--folders-only', '-f', action='store_true', required=True)
+parser_copy_with_ref.add_argument('--ignore', '-i', type=str, required=True)
 
 # Check a single model
 parser_check = subparsers.add_parser('check')
-parser_check.add_argument('--model-dir', '-m', type=str)
+parser_check.add_argument('--model-dir', '-m', type=str, required=True)
 
 # Check all models in directory
 parser_check_all = subparsers.add_parser('check_all')
-parser_check_all.add_argument('--dir', '-d', type=str)
+parser_check_all.add_argument('--dir', '-d', type=str, required=True)
 
 # Generate thumbnails
 parser_generate_thumbnails = subparsers.add_parser('generate_thumbnails')
-parser_generate_thumbnails.add_argument('--dir', '-d', type=str)
-parser_generate_thumbnails.add_argument('--output-dir', '-o', type=str)
+parser_generate_thumbnails.add_argument('--dir', '-d', type=str, required=True)
+parser_generate_thumbnails.add_argument(
+    '--output-dir', '-o', type=str, required=True)
 
 
 def main():
@@ -50,7 +52,7 @@ def main():
     elif args.subparser_name == 'generate_thumbnails':
         generate_thumbnails(args)
     else:
-        print('all done!')
+        parser.print_help()
 
 
 if __name__ == '__main__':
