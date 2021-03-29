@@ -57,5 +57,6 @@ def generate_thumbnails(args):
 
         success += 1
 
+    os.removedirs(tmp_zips_dir)
     print('Success: {} out of {} models.'.format(success, len(models_dir)))
     print('Has errors: {}'.format(has_errors))
