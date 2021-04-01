@@ -7,7 +7,7 @@ This package contains tools to help with the process of uploading models onto [I
 ```bash
 pip3 install \
   colcon-common-extensions \
-  progressbar
+  progressbar2
 ```
 
 and Gazebo classic.
