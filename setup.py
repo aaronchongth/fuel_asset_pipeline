@@ -26,6 +26,8 @@ setup(
         'fuel_asset_pipeline/check.py',
         'fuel_asset_pipeline/check_all.py',
         'fuel_asset_pipeline/generate_thumbnails.py',
+        'fuel_asset_pipeline/upload.py',
+        'fuel_asset_pipeline/upload_all.py',
     ],
     entry_points={
         'console_scripts': [
