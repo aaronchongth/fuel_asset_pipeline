@@ -68,6 +68,28 @@ source ws/install/setup.bash
 ros2 run fuel_asset_pipeline fuel_asset_pipeline generate_thumbnails --dir MODELS_DIR --output-dir OUTPUT_MODELS_DIR
 ```
 
+Upload all (highly unstable for now),
+
+```bash
+source ws/install/setup.bash
+# MODELS_DIR is a directory holding all the models you would like to upload
+# PRIVATE_TOKEN see below on how to generate one
+# OWNER optional, if provided will upload under an organization that you are part of
+# URL optional, url to fuel
+ros2 run fuel_asset_pipeline fuel_asset_pipeline upload_all --dir MODELS_DIR --token PRIVATE_TOKEN --owner OWNER --url URL
+```
+
+Upload one (highly unstable for now),
+
+```bash
+source ws/install/setup.bash
+# MODEL_DIR is a single model directory
+# PRIVATE_TOKEN see below on how to generate one
+# OWNER optional, if provided will upload under an organization that you are part of
+# URL optional, url to fuel
+ros2 run fuel_asset_pipeline fuel_asset_pipeline upload --model-dir MODEL_DIR --token PRIVATE_TOKEN --owner OWNER --url URL
+```
+
 ## Testing
 
 Be sure to test the final models. `gazebo` should be launched without any issues finding any asset, while no warnings or errors should pop up when the model is placed into the world using the `insert` tab.
@@ -76,6 +98,25 @@ Be sure to test the final models. `gazebo` should be launched without any issues
 export GAZEBO_MODEL_PATH=wip/output/; gazebo --verbose
 ```
 
+## Ignition Fuel Private Token
+
+Get the prefix and key using a POST request,
+
+```bash
+# USERNAME username after logging in
+# JWT_TOKEN can be retrieved in browser console, localStorage.id_token, after logging in to Fuel
+# NAME any name you choose
+curl --request POST   --url https://fuel.ignitionrobotics.org/1.0/users/USERNAME/access-tokens   --header 'Authorization: Bearer JWT_TOKEN' --header 'Content-Type: application/json'   --data '{ "name": "NAME" }'
+```
+
+It will return
+
+```bash
+{"name":"NAME","prefix":"PREFIX","key":"KEY"}
+```
+
+The private token's value will be `PREFIX.KEY`.
+
 ## Next up
 
 * Tool to check diff between two sources
@@ -83,4 +124,3 @@ export GAZEBO_MODEL_PATH=wip/output/; gazebo --verbose
 * Checking texture names
 * Checking allowed extension types, refer to Ignition Fuel
 * Upload onto Fuel using `ign-fuel-tools`
-
